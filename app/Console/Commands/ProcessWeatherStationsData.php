@@ -14,7 +14,7 @@ class ProcessWeatherStationsData extends Command
      *
      * @var string
      */
-    protected $signature = 'weatherStation:process';
+    protected $signature = 'weatherStations:process';
 
     /**
      * The console command description.
@@ -28,8 +28,7 @@ class ProcessWeatherStationsData extends Command
      *
      * @return void
      */
-    public
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
     }
@@ -39,8 +38,7 @@ class ProcessWeatherStationsData extends Command
      *
      * @return int
      */
-    public
-    function handle()
+    public function handle()
     {
         Log::info( 'Reading files from storage' );
         $done = 0;

@@ -4,82 +4,59 @@ namespace App\Http\Controllers;
 
 use App\Models\WeatherStation;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class WeatherStationController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display some information based on time and station type
      *
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
-    public function index()
+    public function index(Request $request): Response
     {
-        //
+        $weather_station = new WeatherStation();
+
+        if ( $request->has( 'station' ) ) {
+            $station_type = $request->get( 'station' );
+
+            $weather_station = $weather_station->__call( $station_type, [] );
+        }
+
+        if ( $request->has( 'time' ) ) {
+            $time = $request->get( 'time' );
+
+            $weather_station = $weather_station->whereTime( $time );
+        }
+
+        $data = $weather_station->first();
+
+        //todo::create a separate transformer for returning formatted data
+        return response([
+            'time'        => $data->time,
+            'temperature' => $data->temperature . '°' . $data->temperature_unit,
+            'humidity'    => $data->humidity . '%',
+            'wind'        => $data->wind . ' ' . $data->wind_unit,
+        ], 200);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display some information based on time and station type
      *
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
-    public function create()
+    public function averageInfo(Request $request): Response
     {
-        //
+        if ( $request->has( 'date' ) ) {
+            $date = $request->get( 'date' );
+        }
+
+        $data = WeatherStation::getAverageInfo( $date );
+
+        //todo::create a separate transformer for returning formatted data
+        return response( $data, 200 );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\WeatherStation  $weatherStation
-     * @return \Illuminate\Http\Response
-     */
-    public function show(WeatherStation $weatherStation)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\WeatherStation  $weatherStation
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(WeatherStation $weatherStation)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\WeatherStation  $weatherStation
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, WeatherStation $weatherStation)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\WeatherStation  $weatherStation
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(WeatherStation $weatherStation)
-    {
-        //
-    }
 }

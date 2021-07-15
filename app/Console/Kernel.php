@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
     {
         //schedule command to execute with cron job everyday at given time
 
-        //         $schedule->command('weatherStation:process')->dailyAt('23:45');
+        //         $schedule->command('weatherStations:process')->dailyAt('23:45');
     }
 
     /**

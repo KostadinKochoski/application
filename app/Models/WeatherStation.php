@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +30,49 @@ class WeatherStation extends Model
 
     protected $quarded = [ 'id' ];
 
+    /** SCOPES */
+    public function scopeEU(Builder $builder)
+    {
+        return $builder->where('type', 'EU');
+    }
+
+    public function scopeUS(Builder $builder)
+    {
+        return $builder->where('type', 'US');
+    }
+
+    //todo::make this work with date time not just with timestamp
+    public function scopeWhereTime(Builder $builder, $param)
+    {
+        return $builder->where('time', Carbon::createFromTimestamp($param));
+    }
+
+    public function scopeWhereDate(Builder $builder, $param)
+    {
+        return $builder->whereRaw('date(time) = ?', [ Carbon::createFromDate( $param ) ] );
+    }
+
+    /** HELPERS */
+    public static function getAverageInfo($date)
+    {
+        $eu_query = self::whereDate($date)->eu();
+        $us_query = self::whereDate($date)->us();
+
+        return [
+            'eu' => [
+                'temperature' => $eu_query->average('temperature') . ' °C',
+                'humidity' => $eu_query->average('humidity') . ' %',
+                'wind' => $eu_query->average('wind') . ' km/h',
+            ],
+
+            'us' => [
+                'temperature' => $us_query->average('temperature') . ' °F',
+                'humidity' => $us_query->average('humidity') . ' %',
+                'wind' => $us_query->average('wind') . ' mph',
+            ]
+        ];
+
+    }
 
     public function processFile( $file, $type )
     {
@@ -72,6 +116,7 @@ class WeatherStation extends Model
 
     }
 
+    //todo::create a helper class to process Csv files
     private function processCsvData( $file )
     {
         Log::info('Reading data from csv file');
