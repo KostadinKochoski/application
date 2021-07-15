@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        Commands\ProcessWeatherStationsData::class,
     ];
 
     /**
@@ -24,7 +24,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        //schedule command to execute with cron job everyday at given time
+
+        //         $schedule->command('weatherStation:process')->dailyAt('23:45');
     }
 
     /**
